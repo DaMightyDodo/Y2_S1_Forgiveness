@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04a8901f81b7af6408869d2d6982a65b, type: 3}
+  m_Name: Stats
+  m_EditorClassIdentifier: 
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  grounderDistance: 0.1
+  jumpForce: 24.4
+  coyoteTime: 0.15
+  bufferTime: 0.2
+  groundingForce: -2.06
+  fallAcceleration: 90
+  jumpEndEarlyGravityModifier: 3.16
+  maxFallSpeed: 40
+  apexLowGravityMultiplier: 0.71
+  maxSpeed: 10
+  acceleration: 80
+  groundDeceleration: 100
+  airDeceleration: 70.4
+  apexMultiplier: 1.33
+  crouchMultiplier: 0.3
+  ledgeRayOffsetX: 0
+  ledgeCheckDistance: 0.69
+  rayOffsetX: -0.74
+  ceilingCheckDistance: 0.15
+  cornerCorrectionDistance: 0.18
+  innerRayOffset: 0.5
+  outerRayOffset: 0.01
+  edgeRayLength: 0.4
+  edgeInnerHeight: 0.27
+  edgeCorrectionDistance: 0.25
+  topRayOffset: 1.07
+  bottomRayOffset: 0.01
+  landingFrictionMultiplier: 55.51
+  landingFrictionDuration: 0.79
