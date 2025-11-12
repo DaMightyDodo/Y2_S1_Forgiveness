@@ -38,7 +38,7 @@ public class PlayerInputController : MonoBehaviour
         if (context.started)
         { 
             OnCharacterDrop?.Invoke(true);
-            Debug.Log("Dropped");
+            Debug.Log("pressed down");
         }
         else if (context.canceled)
         { 

@@ -56,7 +56,6 @@ public class PlayerController : MonoBehaviour
         BumpHeadCorrection();
         CatchJumpCorrection();
         HandleGravity();
-        platformCheck.HandlePlatformDrop();
     }
     private void OnEnable()
     {

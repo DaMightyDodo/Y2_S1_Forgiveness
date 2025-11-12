@@ -4,51 +4,50 @@ public class PlatformCheck : MonoBehaviour
 {
     [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private LayerMask platformLayer;
-
-    private bool _isDropping;
     private bool _isOnPlatform;
+    private bool _isDropping;
+    private Collider2D _currentPlatform;
 
     public bool IsOnPlatform => _isOnPlatform;
 
-    public void SetDropping(bool isDropping)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        _isDropping = isDropping;
-
-        if (_isDropping && _isOnPlatform)
-        {
-            if (playerCollider.enabled)
-                playerCollider.enabled = false; // drop through
-        }
-        else
-        {
-            if (!playerCollider.enabled)
-                playerCollider.enabled = true; // re-enable when input released
-        }
-    }
-
-    // Call this in FixedUpdate or via PlayerController
-    public void HandlePlatformDrop()
-    {
-        // Nothing else needed for now; collider is toggled via SetDropping
-    }
-
-    private void OnCollisionEnter2D(Collision2D _collision)
-    {
-        // Landed on Platform (specific layer check)
-        if (_collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
+        // Check if we landed on a platform layer
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
         {
             _isOnPlatform = true;
-            Debug.Log("Landed on Platform");
+            _currentPlatform = collision.collider;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D _collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        if (_collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
+        // When we leave a platform
+        if (collision.collider == _currentPlatform)
         {
             _isOnPlatform = false;
-            Debug.Log("Left Platform");
+            _currentPlatform = null;
+            StopIgnoringPlatform();
         }
     }
 
+    public void SetDropping(bool isDropping)
+    {
+        // Only drop if we're currently on a platform
+        if (isDropping && _isOnPlatform && !_isDropping && _currentPlatform != null)
+        {
+            _isDropping = true;
+            Physics2D.IgnoreCollision(playerCollider, _currentPlatform, true);
+        }
+    }
+
+    private void StopIgnoringPlatform()
+    {
+        if (_currentPlatform != null)
+        {
+            Physics2D.IgnoreCollision(playerCollider, _currentPlatform, false);
+            Debug.Log("Ignoring platform");
+        }
+        _isDropping = false;
+    }
 }
