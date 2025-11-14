@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Stats", menuName = "Scriptable Objects/Stats")]
-public class Stats : ScriptableObject
+[CreateAssetMenu(fileName = "PlayerStats", menuName = "Scriptable Objects/PlayerStats")]
+public class PlayerStats : ScriptableObject
 {
     [Header("Layers & Collision")]
     public LayerMask playerLayer;

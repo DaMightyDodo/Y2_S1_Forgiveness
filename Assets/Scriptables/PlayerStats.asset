@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04a8901f81b7af6408869d2d6982a65b, type: 3}
-  m_Name: Stats
+  m_Name: PlayerStats
   m_EditorClassIdentifier: 
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
   grounderDistance: 0.1
   jumpForce: 24.4
-  coyoteTime: 0.15
+  coyoteTime: 0.14
   bufferTime: 0.2
   groundingForce: -2.06
   fallAcceleration: 90
@@ -37,10 +37,10 @@ MonoBehaviour:
   cornerCorrectionDistance: 0.18
   innerRayOffset: 0.5
   outerRayOffset: 0.01
-  edgeRayLength: 0.4
+  edgeRayLength: 0.3
   edgeInnerHeight: 0.27
   edgeCorrectionDistance: 0.25
-  topRayOffset: 1.07
+  topRayOffset: 0.97
   bottomRayOffset: 0.01
   landingFrictionMultiplier: 55.51
   landingFrictionDuration: 0.79

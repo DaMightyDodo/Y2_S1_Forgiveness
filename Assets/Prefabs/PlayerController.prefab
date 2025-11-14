@@ -959,9 +959,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 9080878558960549341}
   _col: {fileID: 7377425959521066882}
-  stats: {fileID: 11400000, guid: e79e3a640dda5b744847a8551959ab25, type: 2}
-  platformCheck: {fileID: 8379237782707866872}
   mPlayerInputController: {fileID: 8652499259844964721}
+  _stats: {fileID: 11400000, guid: e79e3a640dda5b744847a8551959ab25, type: 2}
+  _platformCheck: {fileID: 8379237782707866872}
 --- !u!61 &7377425959521066882
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1035,7 +1035,9 @@ MonoBehaviour:
   playerCollider: {fileID: 7377425959521066882}
   platformLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
+  settings: {fileID: 11400000, guid: 7ba74816ff9255d47921f2087f6b4b33, type: 2}
+  rayOffset: 0
 --- !u!1 &5457373228335659822
 GameObject:
   m_ObjectHideFlags: 0
