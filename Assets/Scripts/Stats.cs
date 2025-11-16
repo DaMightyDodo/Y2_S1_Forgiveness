@@ -18,26 +18,7 @@ public class PlayerStats : ScriptableObject
 
     [Tooltip("How long before landing a jump input can still register.")]
     public float bufferTime = 0.2f;
-
-    [Header("Gravity Settings")]
-    [Tooltip("Extra downward force applied when grounded (to keep player stuck to ground).")]
-    public float groundingForce = -1.5f;
-
-    [Tooltip("How fast gravity accelerates the player while falling.")]
-    public float fallAcceleration = 110f;
-
-    [Tooltip("Multiplier applied to gravity when the jump key is released early.")]
-    public float jumpEndEarlyGravityModifier = 3f;
-
-    [Tooltip("Maximum downward speed before clamping.")]
-    public float maxFallSpeed = 40f;
-
-    [Tooltip("How much to reduce gravity near the jump apex.")]
-    public float apexLowGravityMultiplier = 0.5f;
-
-    [Tooltip("Duration in seconds for low gravity after reaching apex")]
-    public float apexLowGravityDuration = 0.2f;
-
+    
     [Header("Horizontal Movement")]
     [Tooltip("Maximum horizontal movement speed.")]
     public float maxSpeed = 14f;

@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D _col;
     [SerializeField] private PlayerInputController mPlayerInputController;
     [SerializeField] private PlayerStats _stats; //Scriptable Object
+    [SerializeField] private GravityController gravity;
     private IPlatformHandler _platformHandler;
     private float _horizontal; //to get value from input action
     private Vector2 _frameVelocity;
@@ -24,11 +25,6 @@ public class PlayerController : MonoBehaviour
     private bool _isDropping;
     private float _frameLeftGrounded = float.MinValue;
 
-    // added for apex gravity handling
-    private float _defaultGravityScale;
-    private bool _apexLowGravityActive;
-    private float _apexLowGravityTimer;
-
     private void Awake()
     {
         _platformHandler = GetComponent<IPlatformHandler>();
@@ -37,6 +33,7 @@ public class PlayerController : MonoBehaviour
         _coyoteAble = false;
         _timeJumpWasPressed = float.MinValue;
         _cachedQueryStartInColliders = Physics2D.queriesStartInColliders;
+        gravity = GetComponent<GravityController>();
     }
 
     // Handles per-frame logic like tracking time
@@ -55,8 +52,9 @@ public class PlayerController : MonoBehaviour
         CheckCollisions();
         BumpHeadCorrection();
         CatchJumpCorrection();
-        HandleGravity();
+        gravity.UpdateState(_isGrounded, _jumpHeld, _rb.linearVelocity.y);
         _platformHandler?.HandlePlatform();
+        
     }
     private void OnEnable()
     {
@@ -313,51 +311,5 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
-
-    #region Gravity
-
-    // Applies gravity, fall speed limits, and early jump release effects
-    private void HandleGravity()
-    {
-        //WUT IS THIS ONLY CHANGE GRAVITY OF RIGIBODY 2D ONLY
-        if (_isGrounded && _rb.linearVelocityY <= 0f)
-        {
-            _rb.linearVelocityY = _stats.groundingForce;
-            _apexLowGravityActive = false;
-        }
-        else
-        {
-            var inAirGravity = _stats.fallAcceleration;
-
-            // Detect early release inside physics, not input callback
-            if (!_jumpHeld && !_isGrounded && _rb.linearVelocityY > 0) _endedJumpEarly = true;
-
-            // Apply stronger gravity if jump was released early
-            if (_endedJumpEarly && _rb.linearVelocityY > 0) inAirGravity *= _stats.jumpEndEarlyGravityModifier;
-
-            // handle temporary low gravity after apex
-            if (_apexLowGravityActive)
-            {
-                inAirGravity *= _stats.apexLowGravityMultiplier;
-                _apexLowGravityTimer -= Time.fixedDeltaTime;
-                if (_apexLowGravityTimer <= 0) _apexLowGravityActive = false;
-            }
-
-            _rb.linearVelocityY = Mathf.MoveTowards(
-                _rb.linearVelocityY,
-                -_stats.maxFallSpeed,
-                inAirGravity * Time.fixedDeltaTime
-            );
-        }
-
-        _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocityY);
-
-        // Detect apex: when upward velocity changes to downward
-        if (!_isGrounded && !_reachedApex && _jumpHeld && _rb.linearVelocityY <= 0)
-            _reachedApex = true;
-        else if (_isGrounded) _reachedApex = false; // reset when touching ground
-        if (_reachedApex) _apexLowGravityActive = true;
-    }
-
-    #endregion
+    
 }
