@@ -35,6 +35,9 @@ public class PlayerStats : ScriptableObject
     [Tooltip("How much to reduce gravity near the jump apex.")]
     public float apexLowGravityMultiplier = 0.5f;
 
+    [Tooltip("Duration in seconds for low gravity after reaching apex")]
+    public float apexLowGravityDuration = 0.2f;
+
     [Header("Horizontal Movement")]
     [Tooltip("Maximum horizontal movement speed.")]
     public float maxSpeed = 14f;

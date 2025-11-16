@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private float _frameLeftGrounded = float.MinValue;
 
     // added for apex gravity handling
+    private float _defaultGravityScale;
     private bool _apexLowGravityActive;
     private float _apexLowGravityTimer;
 
