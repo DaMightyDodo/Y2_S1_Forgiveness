@@ -51,6 +51,7 @@
         {
             HandleMovement();
             HandleJump();
+            HandleCrouch();
             CheckCollisions();
             BumpHeadCorrection();
             CatchJumpCorrection();
@@ -131,7 +132,38 @@
 
                 _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, targetSpeed, _stats.acceleration * Time.fixedDeltaTime);
 
-                // Prevent walking off ledge while crouching and grounded
+            }
+            // Apply to rigidbody (keeping vertical movement)
+            _rb.linearVelocity = new Vector2(_frameVelocity.x, _rb.linearVelocity.y);
+        }
+        #endregion
+        
+        #region Jumping
+
+
+        // Handles jump logic, including coyote time and jump buffering
+        private void HandleJump()
+        {
+            bool canUseCoyote = _coyoteAble && !_isGrounded && _time < _frameLeftGrounded + _stats.coyoteTime && _time < 
+                _timeJumpWasPressed + _stats.bufferTime;
+            bool canUseBuffer = _isGrounded && _time < _timeJumpWasPressed + _stats.bufferTime;
+
+            if (canUseCoyote || canUseBuffer)
+            {
+                _tmpVelocity = _rb.linearVelocity;
+                _tmpVelocity.y = 0;
+                _rb.linearVelocity = _tmpVelocity;
+                
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _stats.jumpForce); //jump!
+                _coyoteAble = false;
+                _timeJumpWasPressed = float.MinValue; // consume jump input
+            }
+        }
+        #endregion
+
+        private void HandleCrouch()
+        {
+                            // Prevent walking off ledge while crouching and grounded
                 if (_isCrouching && _isGrounded && Mathf.Abs(_frameVelocity.x) > 0.01f)
                 {
                     Bounds b = _col.bounds;
@@ -162,35 +194,7 @@
                         _frameVelocity.x = 0f;
                     }
                 }
-
-            }
-            // Apply to rigidbody (keeping vertical movement)
-            _rb.linearVelocity = new Vector2(_frameVelocity.x, _rb.linearVelocity.y);
         }
-        #endregion
-        
-        #region Jumping
-
-
-        // Handles jump logic, including coyote time and jump buffering
-        private void HandleJump()
-        {
-            bool canUseCoyote = _coyoteAble && !_isGrounded && _time < _frameLeftGrounded + _stats.coyoteTime && _time < 
-                _timeJumpWasPressed + _stats.bufferTime;
-            bool canUseBuffer = _isGrounded && _time < _timeJumpWasPressed + _stats.bufferTime;
-
-            if (canUseCoyote || canUseBuffer)
-            {
-                _tmpVelocity = _rb.linearVelocity;
-                _tmpVelocity.y = 0;
-                _rb.linearVelocity = _tmpVelocity;
-                
-                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _stats.jumpForce); //jump!
-                _coyoteAble = false;
-                _timeJumpWasPressed = float.MinValue; // consume jump input
-            }
-        }
-        #endregion
 
         #region Collision
         // Checks ground contact using BoxCast and updates grounded state
