@@ -1,3 +1,4 @@
+using Interfaces;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -6,7 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D _col;
     [SerializeField] private PlayerInputController mPlayerInputController;
     [SerializeField] private PlayerStats _stats; //Scriptable Object
-    [SerializeField] private PlatformCheck _platformCheck;
+    private IPlatformHandler _platformHandler;
     private float _horizontal; //to get value from input action
     private Vector2 _frameVelocity;
     private bool _cachedQueryStartInColliders; //ignore player's _collider
@@ -20,7 +21,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 _tmpVelocity;
     private bool _isGrounded; //ground check boolean
     private bool _isOnPlatform;
-
+    private bool _isDropping;
     private float _frameLeftGrounded = float.MinValue;
 
     // added for apex gravity handling
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        _platformHandler = GetComponent<IPlatformHandler>();
         _rb = GetComponent<Rigidbody2D>();
         _col = GetComponent<BoxCollider2D>();
         _coyoteAble = false;
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour
         BumpHeadCorrection();
         CatchJumpCorrection();
         HandleGravity();
+        _platformHandler?.HandlePlatform();
     }
     private void OnEnable()
     {
@@ -99,7 +102,8 @@ public class PlayerController : MonoBehaviour
 
     private void Drop(bool isDropping)
     {
-        _platformCheck.SetDropping(isDropping);
+        _isDropping = isDropping;
+        _platformHandler.SetDropping(isDropping);
     }
 
     #endregion
@@ -260,7 +264,7 @@ public class PlayerController : MonoBehaviour
     // Detects and corrects midair ledge bumps while falling
     private void CatchJumpCorrection()
     {
-        if (_isGrounded || _rb.linearVelocity.y > 0 || Mathf.Abs(_horizontal) < 0.01f) return;
+        if (_rb.linearVelocity.y > 0 || Mathf.Abs(_horizontal) < 0.01f || _isDropping) return;
 
         var b = _col.bounds;
         LayerMask mask = ~_stats.playerLayer;

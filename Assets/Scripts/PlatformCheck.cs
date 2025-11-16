@@ -1,14 +1,39 @@
 using UnityEngine;
-
-public class PlatformCheck : MonoBehaviour
+using Interfaces;
+public class PlatformCheck : MonoBehaviour, IPlatformHandler
 {
     [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private LayerMask platformLayer;
     [SerializeField] private PlatformCheckSettings settings;
     private bool _isOnPlatform;
     private Collider2D _currentPlatform;
-    private bool _isRayCasting;
-    private void FixedUpdate()
+    public bool _isRayCasting;
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & platformLayer) > 0)
+        {
+            _isOnPlatform = true;
+            _currentPlatform = collision.collider;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider == _currentPlatform)
+        {
+            _isOnPlatform = false;
+            _isRayCasting = true;
+        }
+    }
+    public void SetDropping(bool isDropping)
+    {
+        if (isDropping && _isOnPlatform && _currentPlatform != null)
+        {
+            Physics2D.IgnoreCollision(playerCollider, _currentPlatform, true);
+            _isRayCasting = true;
+        }
+    }
+    public void HandlePlatform()
     {
         if (_isRayCasting)
         {
@@ -28,32 +53,6 @@ public class PlatformCheck : MonoBehaviour
                 Physics2D.IgnoreCollision(playerCollider, _currentPlatform, false);
                 _isRayCasting = false;
             }
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (((1 << collision.gameObject.layer) & platformLayer) > 0)
-        {
-            _isOnPlatform = true;
-            _currentPlatform = collision.collider;
-        }
-    }
-            
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.collider == _currentPlatform)
-        {
-            _isOnPlatform = false;
-            _isRayCasting = true;
-        }
-    }
-    public void SetDropping(bool isDropping)
-    {
-        if (isDropping && _isOnPlatform && _currentPlatform != null)
-        {
-            Physics2D.IgnoreCollision(playerCollider, _currentPlatform, true);
-            _isRayCasting = true;
         }
     }
 }
