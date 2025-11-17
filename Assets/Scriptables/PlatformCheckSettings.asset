@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b74ab044e77eaf4f861f0d11b428442, type: 3}
   m_Name: PlatformCheckSettings
   m_EditorClassIdentifier: 
-  rayOffset: 0.18
+  rayOffset: 0.2
   castDistance: 0.5
   boxThickness: 0.05

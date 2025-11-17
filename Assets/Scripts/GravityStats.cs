@@ -8,12 +8,7 @@ public class GravityStats : ScriptableObject
     [Header("Fall")]
     public float fallGravityMult = 1.5f;
     public float maxFallSpeed = 16f;
-
-    [Header("Fast Fall")]
-    public bool fastFallAllowed = true;
-    public float fastFallGravityMult = 2f;
-    public float maxFastFallSpeed = 20f;
-
+    
     [Header("Jump Cut")]
     public float jumpCutGravityMult = 2f;
 

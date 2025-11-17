@@ -10,8 +10,7 @@ public class GravityController : MonoBehaviour
     [Header("State (set by PlayerController)")]
     public bool isGrounded;
     public bool isJumping;
-    public bool jumpHeld;
-    public bool jumpCut;
+    public bool isJumpCut;
 
     private void Reset()
     {
@@ -25,7 +24,7 @@ public class GravityController : MonoBehaviour
     public void UpdateState(bool grounded, bool held, float velocityY)
     {
         isGrounded = grounded;
-        jumpCut = (!held && velocityY > 0);
+        isJumpCut = (!held && velocityY > 0);
         isJumping = (velocityY > 0 && !grounded);
     }
 
@@ -40,23 +39,14 @@ public class GravityController : MonoBehaviour
             return;
         }
 
-        // 2. FAST FALL (holding down and falling)
-        if (velocityY < 0 && stats.fastFallAllowed && Input.GetAxisRaw("Vertical") < 0)
-        {
-            rb.gravityScale = stats.defaultGravityScale * stats.fastFallGravityMult;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(velocityY, -stats.maxFastFallSpeed));
-            return;
-        }
-
-        // 3. JUMP CUT (released early)
-        if (jumpCut && velocityY > 0)
+        // 2. End Jump Early
+        if (isJumpCut && velocityY > 0)
         {
             rb.gravityScale = stats.defaultGravityScale * stats.jumpCutGravityMult;
             return;
         }
 
-        // 4. HANG TIME (APEX) — dino-style
-        // EXACT SAME LOGIC AS DINO:
+        // 3. HANG TIME (APEX)
         // small velocity near apex = low gravity
         if ((isJumping || velocityY > 0) && Mathf.Abs(velocityY) < stats.jumpHangTimeThreshold)
         {
@@ -64,7 +54,7 @@ public class GravityController : MonoBehaviour
             return;
         }
 
-        // 5. FALL GRAVITY
+        // 4. FALL GRAVITY
         if (velocityY < 0)
         {
             rb.gravityScale = stats.defaultGravityScale * stats.fallGravityMult;
@@ -72,7 +62,7 @@ public class GravityController : MonoBehaviour
             return;
         }
 
-        // 6. DEFAULT GRAVITY
+        // 5. DEFAULT GRAVITY
         rb.gravityScale = stats.defaultGravityScale;
     }
 }
