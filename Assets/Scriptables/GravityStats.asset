@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d2dc94adead70a4f84e40382ff78dd0, type: 3}
   m_Name: GravityStats
   m_EditorClassIdentifier: 
-  defaultGravityScale: 1
+  defaultGravityScale: 6.45
   fallGravityMult: 1.5
   maxFallSpeed: 16
-  fastFallAllowed: 1
-  fastFallGravityMult: 2
-  maxFastFallSpeed: 20
-  jumpCutGravityMult: 2
+  jumpCutGravityMult: 4.43
   jumpHangGravityMult: 0.5
   jumpHangTimeThreshold: 0.1
