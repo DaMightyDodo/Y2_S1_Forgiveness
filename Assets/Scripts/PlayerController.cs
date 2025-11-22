@@ -163,33 +163,33 @@ public class PlayerController : MonoBehaviour
         // Prevent walking off ledge while crouching and grounded
         if (_isCrouching && _isGrounded && Mathf.Abs(_frameVelocity.x) > 0.01f)
         {
-            var b = _col.bounds;
+            Bounds b = _col.bounds;
             LayerMask mask = ~_stats.playerLayer;
 
             // 4 downward rays
-            var leftOuter = new Vector2(b.min.x, b.min.y);
-            var leftInner = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX,
-                b.min.y);
-            var rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX,
-                b.min.y);
-            var rightOuter = new Vector2(b.max.x, b.min.y);
-            bool leftOuterHit = Physics2D.Raycast(leftOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool leftInnerHit = Physics2D.Raycast(leftInner, Vector2.down, _stats.ledgeCheckDistance, mask);
+            Vector2 leftOuter  = new Vector2(b.min.x, b.min.y);
+            Vector2 leftInner  = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX, b.min.y);
+            Vector2 rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX, b.min.y);
+            Vector2 rightOuter = new Vector2(b.max.x, b.min.y);
+
+            bool leftOuterHit  = Physics2D.Raycast(leftOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
+            bool leftInnerHit  = Physics2D.Raycast(leftInner, Vector2.down, _stats.ledgeCheckDistance, mask);
             bool rightInnerHit = Physics2D.Raycast(rightInner, Vector2.down, _stats.ledgeCheckDistance, mask);
             bool rightOuterHit = Physics2D.Raycast(rightOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-            Debug.DrawRay(leftOuter, Vector2.down * _stats.ledgeCheckDistance,
-                leftOuterHit ? Color.red : Color.green);
-            Debug.DrawRay(leftInner, Vector2.down * _stats.ledgeCheckDistance,
-                leftInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightInner, Vector2.down * _stats.ledgeCheckDistance,
-                rightInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightOuter, Vector2.down * _stats.ledgeCheckDistance,
-                rightOuterHit ? Color.red : Color.green);
+
+            Debug.DrawRay(leftOuter, Vector2.down * _stats.ledgeCheckDistance, leftOuterHit ? Color.red : Color.green);
+            Debug.DrawRay(leftInner, Vector2.down * _stats.ledgeCheckDistance, leftInnerHit ? Color.red : Color.green);
+            Debug.DrawRay(rightInner, Vector2.down * _stats.ledgeCheckDistance, rightInnerHit ? Color.red : Color.green);
+            Debug.DrawRay(rightOuter, Vector2.down * _stats.ledgeCheckDistance, rightOuterHit ? Color.red : Color.green);
 
             // Pairing: outer-left with inner-right, outer-right with inner-left
-            var leftEdgeDrop = leftOuterHit && !rightInnerHit;
-            var rightEdgeDrop = rightOuterHit && !leftInnerHit;
-            if (leftEdgeDrop || rightEdgeDrop) _frameVelocity.x = 0f;
+            bool leftEdgeDrop  = leftOuterHit && !rightInnerHit;
+            bool rightEdgeDrop = rightOuterHit && !leftInnerHit;
+
+            if (leftEdgeDrop || rightEdgeDrop)
+            {
+                _frameVelocity.x = 0f;
+            }
         }
     }
 #endregion
