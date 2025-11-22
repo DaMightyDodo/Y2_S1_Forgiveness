@@ -160,38 +160,48 @@ public class PlayerController : MonoBehaviour
     #region Crouching
     private void HandleCrouch()
     {
-        // Prevent walking off ledge while crouching and grounded
-        if (_isCrouching && _isGrounded && Mathf.Abs(_frameVelocity.x) > 0.01f)
+        if (!_isCrouching || !_isGrounded || Mathf.Abs(_frameVelocity.x) < 0.01f) return;
+
+        Bounds b = _col.bounds;
+        LayerMask mask = ~_stats.playerLayer;
+        float dist = _stats.ledgeCheckDistance;
+
+        // 4 downward rays
+        Vector2 leftOuter  = new Vector2(b.min.x, b.min.y);
+        Vector2 leftInner  = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX, b.min.y);
+        Vector2 rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX, b.min.y);
+        Vector2 rightOuter = new Vector2(b.max.x, b.min.y);
+
+        bool leftOuterHit  = Physics2D.Raycast(leftOuter, Vector2.down, dist, mask);
+        bool leftInnerHit  = Physics2D.Raycast(leftInner, Vector2.down, dist, mask);
+        bool rightInnerHit = Physics2D.Raycast(rightInner, Vector2.down, dist, mask);
+        bool rightOuterHit = Physics2D.Raycast(rightOuter, Vector2.down, dist, mask);
+
+        // debug rays
+        Debug.DrawRay(leftOuter,  Vector2.down * dist, leftOuterHit  ? Color.red : Color.green);
+        Debug.DrawRay(leftInner,  Vector2.down * dist, leftInnerHit  ? Color.red : Color.green);
+        Debug.DrawRay(rightInner, Vector2.down * dist, rightInnerHit ? Color.red : Color.green);
+        Debug.DrawRay(rightOuter, Vector2.down * dist, rightOuterHit ? Color.red : Color.green);
+
+        float dir = Mathf.Sign(_frameVelocity.x);
+
+        // Left ledge: outer hits but inner does not → block right movement
+        bool leftLedge = leftOuterHit && !leftInnerHit;
+        if (leftLedge && dir > 0)
         {
-            Bounds b = _col.bounds;
-            LayerMask mask = ~_stats.playerLayer;
+            _frameVelocity.x = 0f;
+            _rb.linearVelocityX = 0f;
+        }
 
-            // 4 downward rays
-            Vector2 leftOuter  = new Vector2(b.min.x, b.min.y);
-            Vector2 leftInner  = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX, b.min.y);
-            Vector2 rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX, b.min.y);
-            Vector2 rightOuter = new Vector2(b.max.x, b.min.y);
-
-            bool leftOuterHit  = Physics2D.Raycast(leftOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool leftInnerHit  = Physics2D.Raycast(leftInner, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool rightInnerHit = Physics2D.Raycast(rightInner, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool rightOuterHit = Physics2D.Raycast(rightOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-
-            Debug.DrawRay(leftOuter, Vector2.down * _stats.ledgeCheckDistance, leftOuterHit ? Color.red : Color.green);
-            Debug.DrawRay(leftInner, Vector2.down * _stats.ledgeCheckDistance, leftInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightInner, Vector2.down * _stats.ledgeCheckDistance, rightInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightOuter, Vector2.down * _stats.ledgeCheckDistance, rightOuterHit ? Color.red : Color.green);
-
-            // Pairing: outer-left with inner-right, outer-right with inner-left
-            bool leftEdgeDrop  = leftOuterHit && !rightInnerHit;
-            bool rightEdgeDrop = rightOuterHit && !leftInnerHit;
-
-            if (leftEdgeDrop || rightEdgeDrop)
-            {
-                _frameVelocity.x = 0f;
-            }
+        // Right ledge: outer hits but inner does not → block left movement
+        bool rightLedge = rightOuterHit && !rightInnerHit;
+        if (rightLedge && dir < 0)
+        {
+            _frameVelocity.x = 0f;
+            _rb.linearVelocityX = 0f;
         }
     }
+
 #endregion
 
     #region Collision
