@@ -7,7 +7,7 @@ public class PlatformCheck : MonoBehaviour, IPlatformHandler
     [SerializeField] private PlatformCheckSettings settings;
     private bool _isOnPlatform;
     private Collider2D _currentPlatform;
-    public bool _isRayCasting;
+    private bool _isRayCasting;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

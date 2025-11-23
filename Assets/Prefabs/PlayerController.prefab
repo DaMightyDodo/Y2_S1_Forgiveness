@@ -1038,7 +1038,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   settings: {fileID: 11400000, guid: 7ba74816ff9255d47921f2087f6b4b33, type: 2}
-  _isRayCasting: 0
 --- !u!114 &-8050786832206406942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1051,12 +1050,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f981d09f81ef249830a765c525a517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 9080878558960549341}
-  stats: {fileID: 11400000, guid: 2e164d3dc7960a447bfcd68e77f5c177, type: 2}
-  isGrounded: 0
-  isJumping: 0
-  jumpHeld: 0
-  jumpCut: 0
+  _stats: {fileID: 11400000, guid: 2e164d3dc7960a447bfcd68e77f5c177, type: 2}
+  _rb: {fileID: 9080878558960549341}
 --- !u!1 &5457373228335659822
 GameObject:
   m_ObjectHideFlags: 0

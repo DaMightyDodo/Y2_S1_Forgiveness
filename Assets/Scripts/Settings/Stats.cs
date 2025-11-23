@@ -38,8 +38,6 @@ public class PlayerStats : ScriptableObject
     [Header("Crouch Settings")]
     [Tooltip("Speed multiplier when crouching.")]
     public float crouchMultiplier = 0.4f;
-    [Tooltip("How far horizontally from player edge to cast the ledge detection ray.")]
-    public float ledgeRayOffsetX = 0.1f;
     [Tooltip("How far below the player to check for ledge when crouching.")]
     public float ledgeCheckDistance = 0.2f;
     [Tooltip("Global horizontal offset for crouch ledge detection rays.")]

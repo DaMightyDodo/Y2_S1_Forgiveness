@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     private bool _isCrouching;
     private bool _coyoteAble; //condition for jumping while falling
     private float _timeJumpWasPressed;
-    private bool _endedJumpEarly;
     private bool _jumpHeld;
     private Vector2 _tmpVelocity;
     private bool _isGrounded; //ground check boolean
@@ -123,6 +122,7 @@ public class PlayerController : MonoBehaviour
             var targetSpeed = _horizontal * _stats.maxSpeed;
             // Apply apex multiplier while in air after reaching jump apex
             if (!_isGrounded && _reachedApex) targetSpeed *= _stats.apexMultiplier;
+            // Apply crouch multiplier while grounded and crouching 
             if (_isGrounded && _isCrouching) targetSpeed *= _stats.crouchMultiplier;
 
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, targetSpeed, _stats.acceleration * Time.fixedDeltaTime);
@@ -220,7 +220,6 @@ public class PlayerController : MonoBehaviour
         {
             _isGrounded = true;
             _coyoteAble = true;
-            _endedJumpEarly = false;
         }
         // is not grounded
         else if (_isGrounded && !groundHit)
