@@ -73,8 +73,5 @@ public class PlayerStats : ScriptableObject
     [Tooltip("Outward horizontal offset for the lower ray.")]
     public float bottomRayOffset = 0.02f;
     
-    [Header("Landing Friction Boost")]
-    public float landingFrictionMultiplier = 2f;
-    public float landingFrictionDuration = 0.2f;
 
 }

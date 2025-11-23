@@ -9,12 +9,12 @@ public class FollowCamera : MonoBehaviour {
     public Vector3 offset;
     Vector3 targetPos;
     // Use this for initialization
-    void Start () {
+    private void Start () {
         targetPos = transform.position;
     }
 	
     // Update is called once per frame
-    void FixedUpdate () {
+    private void FixedUpdate () {
         if (target)
         {
             Vector3 posNoZ = transform.position;
