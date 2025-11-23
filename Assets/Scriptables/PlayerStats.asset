@@ -16,10 +16,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   grounderDistance: 0.1
-  jumpForce: 18.7
+  jumpForce: 18.8
   coyoteTime: 0.14
   bufferTime: 0.2
-  maxSpeed: 9
+  maxSpeed: 9.3
   acceleration: 80
   groundDeceleration: 111.7
   airDeceleration: 70.4

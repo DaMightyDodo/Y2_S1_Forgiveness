@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultGravityScale: 6.45
   fallGravityMult: 1.5
-  maxFallSpeed: 16
+  maxFallSpeed: 17
   jumpCutGravityMult: 4.43
   jumpHangGravityMult: 0.5
   jumpHangTimeThreshold: 0.1

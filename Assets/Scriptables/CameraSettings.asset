@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f28da099eeb7a46a331612bd9862a1, type: 3}
   m_Name: CameraSettings
   m_EditorClassIdentifier: 
-  interpVelocity: 0.03150414
-  followSpeedMultiplier: 10
-  smoothMultiplier: 0.25
+  interpVelocity: 0.03590419
+  followSpeedMultiplier: 23.2
+  smoothMultiplier: 0.12
   offset: {x: 0, y: 0, z: 0}
