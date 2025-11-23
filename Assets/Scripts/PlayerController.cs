@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D _col;
     [SerializeField] private PlayerInputController mPlayerInputController;
     [SerializeField] private PlayerStats _stats; //Scriptable Object
+    [SerializeField] private GravityController gravity;
     private IPlatformHandler _platformHandler;
     private float _horizontal; //to get value from input action
     private Vector2 _frameVelocity;
@@ -16,18 +17,12 @@ public class PlayerController : MonoBehaviour
     private bool _isCrouching;
     private bool _coyoteAble; //condition for jumping while falling
     private float _timeJumpWasPressed;
-    private bool _endedJumpEarly;
     private bool _jumpHeld;
     private Vector2 _tmpVelocity;
     private bool _isGrounded; //ground check boolean
     private bool _isOnPlatform;
     private bool _isDropping;
     private float _frameLeftGrounded = float.MinValue;
-
-    // added for apex gravity handling
-    private float _defaultGravityScale;
-    private bool _apexLowGravityActive;
-    private float _apexLowGravityTimer;
 
     private void Awake()
     {
@@ -37,6 +32,7 @@ public class PlayerController : MonoBehaviour
         _coyoteAble = false;
         _timeJumpWasPressed = float.MinValue;
         _cachedQueryStartInColliders = Physics2D.queriesStartInColliders;
+        gravity = GetComponent<GravityController>();
     }
 
     // Handles per-frame logic like tracking time
@@ -55,8 +51,9 @@ public class PlayerController : MonoBehaviour
         CheckCollisions();
         BumpHeadCorrection();
         CatchJumpCorrection();
-        HandleGravity();
+        gravity.UpdateState(_isGrounded, _jumpHeld, _rb.linearVelocity.y);
         _platformHandler?.HandlePlatform();
+        
     }
     private void OnEnable()
     {
@@ -125,6 +122,7 @@ public class PlayerController : MonoBehaviour
             var targetSpeed = _horizontal * _stats.maxSpeed;
             // Apply apex multiplier while in air after reaching jump apex
             if (!_isGrounded && _reachedApex) targetSpeed *= _stats.apexMultiplier;
+            // Apply crouch multiplier while grounded and crouching 
             if (_isGrounded && _isCrouching) targetSpeed *= _stats.crouchMultiplier;
 
             _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, targetSpeed, _stats.acceleration * Time.fixedDeltaTime);
@@ -162,38 +160,48 @@ public class PlayerController : MonoBehaviour
     #region Crouching
     private void HandleCrouch()
     {
-        // Prevent walking off ledge while crouching and grounded
-        if (_isCrouching && _isGrounded && Mathf.Abs(_frameVelocity.x) > 0.01f)
+        if (!_isCrouching || !_isGrounded || Mathf.Abs(_frameVelocity.x) < 0.01f) return;
+
+        Bounds b = _col.bounds;
+        LayerMask mask = ~_stats.playerLayer;
+        float dist = _stats.ledgeCheckDistance;
+
+        // 4 downward rays
+        Vector2 leftOuter  = new Vector2(b.min.x, b.min.y);
+        Vector2 leftInner  = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX, b.min.y);
+        Vector2 rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX, b.min.y);
+        Vector2 rightOuter = new Vector2(b.max.x, b.min.y);
+
+        bool leftOuterHit  = Physics2D.Raycast(leftOuter, Vector2.down, dist, mask);
+        bool leftInnerHit  = Physics2D.Raycast(leftInner, Vector2.down, dist, mask);
+        bool rightInnerHit = Physics2D.Raycast(rightInner, Vector2.down, dist, mask);
+        bool rightOuterHit = Physics2D.Raycast(rightOuter, Vector2.down, dist, mask);
+
+        // debug rays
+        Debug.DrawRay(leftOuter,  Vector2.down * dist, leftOuterHit  ? Color.red : Color.green);
+        Debug.DrawRay(leftInner,  Vector2.down * dist, leftInnerHit  ? Color.red : Color.green);
+        Debug.DrawRay(rightInner, Vector2.down * dist, rightInnerHit ? Color.red : Color.green);
+        Debug.DrawRay(rightOuter, Vector2.down * dist, rightOuterHit ? Color.red : Color.green);
+
+        float dir = Mathf.Sign(_frameVelocity.x);
+
+        // Left ledge: outer hits but inner does not → block right movement
+        bool leftLedge = leftOuterHit && !leftInnerHit;
+        if (leftLedge && dir > 0)
         {
-            var b = _col.bounds;
-            LayerMask mask = ~_stats.playerLayer;
+            _frameVelocity.x = 0f;
+            _rb.linearVelocityX = 0f;
+        }
 
-            // 4 downward rays
-            var leftOuter = new Vector2(b.min.x, b.min.y);
-            var leftInner = new Vector2(b.center.x - b.extents.x * _stats.innerRayOffset - _stats.rayOffsetX,
-                b.min.y);
-            var rightInner = new Vector2(b.center.x + b.extents.x * _stats.innerRayOffset + _stats.rayOffsetX,
-                b.min.y);
-            var rightOuter = new Vector2(b.max.x, b.min.y);
-            bool leftOuterHit = Physics2D.Raycast(leftOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool leftInnerHit = Physics2D.Raycast(leftInner, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool rightInnerHit = Physics2D.Raycast(rightInner, Vector2.down, _stats.ledgeCheckDistance, mask);
-            bool rightOuterHit = Physics2D.Raycast(rightOuter, Vector2.down, _stats.ledgeCheckDistance, mask);
-            Debug.DrawRay(leftOuter, Vector2.down * _stats.ledgeCheckDistance,
-                leftOuterHit ? Color.red : Color.green);
-            Debug.DrawRay(leftInner, Vector2.down * _stats.ledgeCheckDistance,
-                leftInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightInner, Vector2.down * _stats.ledgeCheckDistance,
-                rightInnerHit ? Color.red : Color.green);
-            Debug.DrawRay(rightOuter, Vector2.down * _stats.ledgeCheckDistance,
-                rightOuterHit ? Color.red : Color.green);
-
-            // Pairing: outer-left with inner-right, outer-right with inner-left
-            var leftEdgeDrop = leftOuterHit && !rightInnerHit;
-            var rightEdgeDrop = rightOuterHit && !leftInnerHit;
-            if (leftEdgeDrop || rightEdgeDrop) _frameVelocity.x = 0f;
+        // Right ledge: outer hits but inner does not → block left movement
+        bool rightLedge = rightOuterHit && !rightInnerHit;
+        if (rightLedge && dir < 0)
+        {
+            _frameVelocity.x = 0f;
+            _rb.linearVelocityX = 0f;
         }
     }
+
 #endregion
 
     #region Collision
@@ -212,7 +220,6 @@ public class PlayerController : MonoBehaviour
         {
             _isGrounded = true;
             _coyoteAble = true;
-            _endedJumpEarly = false;
         }
         // is not grounded
         else if (_isGrounded && !groundHit)
@@ -313,51 +320,5 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
-
-    #region Gravity
-
-    // Applies gravity, fall speed limits, and early jump release effects
-    private void HandleGravity()
-    {
-        //WUT IS THIS ONLY CHANGE GRAVITY OF RIGIBODY 2D ONLY
-        if (_isGrounded && _rb.linearVelocityY <= 0f)
-        {
-            _rb.linearVelocityY = _stats.groundingForce;
-            _apexLowGravityActive = false;
-        }
-        else
-        {
-            var inAirGravity = _stats.fallAcceleration;
-
-            // Detect early release inside physics, not input callback
-            if (!_jumpHeld && !_isGrounded && _rb.linearVelocityY > 0) _endedJumpEarly = true;
-
-            // Apply stronger gravity if jump was released early
-            if (_endedJumpEarly && _rb.linearVelocityY > 0) inAirGravity *= _stats.jumpEndEarlyGravityModifier;
-
-            // handle temporary low gravity after apex
-            if (_apexLowGravityActive)
-            {
-                inAirGravity *= _stats.apexLowGravityMultiplier;
-                _apexLowGravityTimer -= Time.fixedDeltaTime;
-                if (_apexLowGravityTimer <= 0) _apexLowGravityActive = false;
-            }
-
-            _rb.linearVelocityY = Mathf.MoveTowards(
-                _rb.linearVelocityY,
-                -_stats.maxFallSpeed,
-                inAirGravity * Time.fixedDeltaTime
-            );
-        }
-
-        _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocityY);
-
-        // Detect apex: when upward velocity changes to downward
-        if (!_isGrounded && !_reachedApex && _jumpHeld && _rb.linearVelocityY <= 0)
-            _reachedApex = true;
-        else if (_isGrounded) _reachedApex = false; // reset when touching ground
-        if (_reachedApex) _apexLowGravityActive = true;
-    }
-
-    #endregion
+    
 }
