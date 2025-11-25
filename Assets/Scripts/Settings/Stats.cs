@@ -18,26 +18,7 @@ public class PlayerStats : ScriptableObject
 
     [Tooltip("How long before landing a jump input can still register.")]
     public float bufferTime = 0.2f;
-
-    [Header("Gravity Settings")]
-    [Tooltip("Extra downward force applied when grounded (to keep player stuck to ground).")]
-    public float groundingForce = -1.5f;
-
-    [Tooltip("How fast gravity accelerates the player while falling.")]
-    public float fallAcceleration = 110f;
-
-    [Tooltip("Multiplier applied to gravity when the jump key is released early.")]
-    public float jumpEndEarlyGravityModifier = 3f;
-
-    [Tooltip("Maximum downward speed before clamping.")]
-    public float maxFallSpeed = 40f;
-
-    [Tooltip("How much to reduce gravity near the jump apex.")]
-    public float apexLowGravityMultiplier = 0.5f;
-
-    [Tooltip("Duration in seconds for low gravity after reaching apex")]
-    public float apexLowGravityDuration = 0.2f;
-
+    
     [Header("Horizontal Movement")]
     [Tooltip("Maximum horizontal movement speed.")]
     public float maxSpeed = 14f;
@@ -57,8 +38,6 @@ public class PlayerStats : ScriptableObject
     [Header("Crouch Settings")]
     [Tooltip("Speed multiplier when crouching.")]
     public float crouchMultiplier = 0.4f;
-    [Tooltip("How far horizontally from player edge to cast the ledge detection ray.")]
-    public float ledgeRayOffsetX = 0.1f;
     [Tooltip("How far below the player to check for ledge when crouching.")]
     public float ledgeCheckDistance = 0.2f;
     [Tooltip("Global horizontal offset for crouch ledge detection rays.")]
@@ -92,8 +71,5 @@ public class PlayerStats : ScriptableObject
     [Tooltip("Outward horizontal offset for the lower ray.")]
     public float bottomRayOffset = 0.02f;
     
-    [Header("Landing Friction Boost")]
-    public float landingFrictionMultiplier = 2f;
-    public float landingFrictionDuration = 0.2f;
 
 }

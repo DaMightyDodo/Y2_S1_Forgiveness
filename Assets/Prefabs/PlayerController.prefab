@@ -744,6 +744,7 @@ GameObject:
   - component: {fileID: 7377425959521066882}
   - component: {fileID: 8652499259844964721}
   - component: {fileID: 8379237782707866872}
+  - component: {fileID: -8050786832206406942}
   m_Layer: 6
   m_Name: PlayerController
   m_TagString: Untagged
@@ -961,7 +962,7 @@ MonoBehaviour:
   _col: {fileID: 7377425959521066882}
   mPlayerInputController: {fileID: 8652499259844964721}
   _stats: {fileID: 11400000, guid: e79e3a640dda5b744847a8551959ab25, type: 2}
-  _platformCheck: {fileID: 8379237782707866872}
+  gravity: {fileID: -8050786832206406942}
 --- !u!61 &7377425959521066882
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1037,7 +1038,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   settings: {fileID: 11400000, guid: 7ba74816ff9255d47921f2087f6b4b33, type: 2}
-  rayOffset: 0
+--- !u!114 &-8050786832206406942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3832986511217119242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40f981d09f81ef249830a765c525a517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stats: {fileID: 11400000, guid: 2e164d3dc7960a447bfcd68e77f5c177, type: 2}
+  _rb: {fileID: 9080878558960549341}
 --- !u!1 &5457373228335659822
 GameObject:
   m_ObjectHideFlags: 0

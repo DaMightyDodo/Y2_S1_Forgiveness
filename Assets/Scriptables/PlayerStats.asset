@@ -16,31 +16,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   grounderDistance: 0.1
-  jumpForce: 24.4
+  jumpForce: 18.8
   coyoteTime: 0.14
   bufferTime: 0.2
-  groundingForce: -2.06
-  fallAcceleration: 90
-  jumpEndEarlyGravityModifier: 3.16
-  maxFallSpeed: 40
-  apexLowGravityMultiplier: 0.71
-  maxSpeed: 10
+  maxSpeed: 9.3
   acceleration: 80
-  groundDeceleration: 100
+  groundDeceleration: 111.7
   airDeceleration: 70.4
   apexMultiplier: 1.33
   crouchMultiplier: 0.3
-  ledgeRayOffsetX: 0
-  ledgeCheckDistance: 0.69
-  rayOffsetX: -0.74
-  ceilingCheckDistance: 0.15
+  ledgeCheckDistance: 0.25
+  rayOffsetX: 0.24
+  ceilingCheckDistance: 0.44
   cornerCorrectionDistance: 0.18
   innerRayOffset: 0.5
   outerRayOffset: 0.01
   edgeRayLength: 0.3
   edgeInnerHeight: 0.27
   edgeCorrectionDistance: 0.25
-  topRayOffset: 0.97
-  bottomRayOffset: 0.01
-  landingFrictionMultiplier: 55.51
-  landingFrictionDuration: 0.79
+  topRayOffset: 0.47
+  bottomRayOffset: 0
